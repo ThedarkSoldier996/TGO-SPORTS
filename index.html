@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+
+<title>Player</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css"/>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js"></script>
+
+<style>
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+#video-container {
+    width: 100vw;
+    height: 100vh;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+}
+
+.shaka-bottom-controls {
+    background: linear-gradient(
+        to top,
+        rgba(0,0,0,.85),
+        transparent
+    );
+}
+
+</style>
+</head>
+
+<body>
+
+<div
+    data-shaka-player-container
+    id="video-container"
+    class="shaka-video-container"
+>
+
+<video
+    autoplay
+    playsinline
+    data-shaka-player
+    id="video"
+></video>
+
+</div>
+
+<script>
+
+const MPD_URL =
+'https://d3kzwqwnq1f7tq.cloudfront.net/out/v1/25ca218d53194065bedf6d998ace462e/index.mpd?dvr_window_length=30';
+
+const KEY_ID = atob(
+'MWM2MmEyMTZhNWZlNDIzZjk1OWNiMWNhMDJmNjJkODM='
+);
+
+const KEY = atob(
+'NTRmMmZkYzgzYzFkYTMzY2Q5MjY5YmYyMWUwODIxOGM='
+);
+
+async function initPlayer() {
+
+    const video = document.getElementById('video');
+
+    const ui = video.ui;
+    const controls = ui.getControls();
+    const player = controls.getPlayer();
+
+    window.player = player;
+
+    ui.configure({
+        seekBarColors: {
+            base: 'rgba(255,255,255,.2)',
+            buffered: 'rgba(255,255,255,.4)',
+            played: 'rgb(255,0,0)'
+        }
+    });
+
+    player.configure({
+        drm: {
+            clearKeys: {
+                [KEY_ID]: KEY
+            }
+        }
+    });
+
+    player.addEventListener('error', onErrorEvent);
+
+    try {
+
+        await player.load(MPD_URL);
+
+        console.log('Video cargado');
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+}
+
+function onErrorEvent(event) {
+
+    console.error(
+        'Shaka Error',
+        event.detail
+    );
+
+}
+
+document.addEventListener(
+    'shaka-ui-loaded',
+    initPlayer
+);
+
+document.addEventListener(
+    'shaka-ui-load-failed',
+    () => {
+        console.error('No se pudo cargar Shaka Player');
+    }
+);
+
+</script>
+
+</body>
+</html>
