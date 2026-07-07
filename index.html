@@ -9,7 +9,7 @@
 <style>
     html, body { margin:0; padding:0; width:100%; height:100%; background:#000; overflow:hidden; }
     #video-container { width:100vw; height:100vh; }
-    video { width:100%; height:100%; object-fit:contain; }
+    video { width:100%; height:100%; object-fit:contain; background:#000; }
 </style>
 </head>
 <body>
@@ -21,8 +21,8 @@
 // === CONFIGURACIÓN ===
 const MPD_URL = "https://otte.live.fly.ww.aiv-cdn.net/gru-nitro/live/clients/dash/enc/x0srg3jjpz/out/v1/f779c49314394d61886d63f58d9d52e4/cenc.mpd?dvr_window_length=30";
 
-const KEY_ID = atob("T0w6mRLqdS6I9El4ZKG8iw==");
-const KEY    = atob("J4EoAE_oxv-yzSoMFUokGg==");
+const KEY_ID = atob('T0w6mRLqdS6I9El4ZKG8iw==');
+const KEY    = atob('J4EoAE_oxv-yzSoMFUokGg==');
 
 async function initPlayer() {
     try {
@@ -30,9 +30,9 @@ async function initPlayer() {
         const ui = video.ui;
         const player = ui.getControls().getPlayer();
 
-        console.log("Iniciando reproductor...");
+        console.log("🔑 KEY_ID:", KEY_ID);
+        console.log("🔑 KEY:", KEY);
 
-        // Configuración DRM con claves directas
         player.configure({
             drm: {
                 clearKeys: {
@@ -41,21 +41,20 @@ async function initPlayer() {
             }
         });
 
-        player.addEventListener('error', (e) => {
-            console.error("Shaka Error:", e.detail);
-        });
+        player.addEventListener('error', (e) => console.error("Shaka Error:", e.detail));
 
+        console.log("Cargando stream...");
         await player.load(MPD_URL);
-        console.log("✅ Video cargado correctamente!");
+        console.log("✅ Reproducción iniciada correctamente!");
 
     } catch (error) {
-        console.error("❌ Error al cargar el video:", error);
+        console.error("❌ Error:", error);
     }
 }
 
-// Inicialización
+// Iniciar
 document.addEventListener('shaka-ui-loaded', initPlayer);
-window.addEventListener('load', () => setTimeout(initPlayer, 1000));
+window.addEventListener('load', () => setTimeout(initPlayer, 800));
 </script>
 </body>
 </html>
