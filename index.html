@@ -18,7 +18,7 @@
 </div>
 
 <script>
-// === CONFIGURACIÓN ===
+// Configuración
 const MPD_URL = "https://otte.live.fly.ww.aiv-cdn.net/gru-nitro/live/clients/dash/enc/x0srg3jjpz/out/v1/f779c49314394d61886d63f58d9d52e4/cenc.mpd";
 
 const KEY_ID = "T0w6mRLqdS6I9El4ZKG8iw";
@@ -32,27 +32,34 @@ async function initPlayer() {
 
         player.configure({
             drm: {
-                clearKeys: {
-                    [KEY_ID]: KEY
-                }
+                clearKeys: { [KEY_ID]: KEY }
             }
         });
 
-        player.addEventListener('error', (e) => {
-            console.error("🚨 Shaka Error:", e.detail);
+        // Headers más agresivos (imitando apps)
+        player.getNetworkingEngine().registerRequestFilter((type, request) => {
+            request.headers = {
+                'User-Agent': 'ExoPlayer2',
+                'Referer': 'https://otte.live/',
+                'Origin': 'https://otte.live',
+                'Accept': '*/*',
+                'Connection': 'keep-alive'
+            };
         });
 
-        console.log("Cargando stream...");
+        player.addEventListener('error', (e) => {
+            console.error("Shaka Error:", e.detail);
+        });
+
+        console.log("Intentando cargar...");
         await player.load(MPD_URL);
-        
-        console.log("✅ ¡Reproducción iniciada!");
+        console.log("✅ Reproduciendo en navegador!");
 
     } catch (error) {
         console.error("❌ Error:", error);
     }
 }
 
-// Iniciar
 document.addEventListener('shaka-ui-loaded', initPlayer);
 window.addEventListener('load', () => setTimeout(initPlayer, 800));
 </script>
