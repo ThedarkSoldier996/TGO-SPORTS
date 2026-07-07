@@ -1,1 +1,105 @@
-<!DOCTYPE html> <html lang="es"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <title>Dailymotion Player</title> <style> html, body { margin: 0; width: 100%; height: 100%; background: #000; overflow: hidden; } .video-container { position: relative; width: 100%; height: 100vh; } iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; } </style> </head> <body> <div class="video-container"> <iframe src="https://geo.dailymotion.com/player.html?video=x9uz5hi" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen> </iframe> </div> </body> </html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<title>DSPORTS ARGENTINA HD - MUNDIAL</title>
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js"></script>
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+#video-container {
+    width: 100vw;
+    height: 100vh;
+}
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+}
+.shaka-bottom-controls {
+    background: linear-gradient(
+        to top,
+        rgba(0,0,0,.85),
+        transparent
+    );
+}
+</style>
+</head>
+<body>
+<div
+    data-shaka-player-container
+    id="video-container"
+    class="shaka-video-container"
+>
+<video
+    autoplay
+    playsinline
+    data-shaka-player
+    id="video"
+></video>
+</div>
+
+<script>
+const MPD_URL = "https://otte.live.fly.ww.aiv-cdn.net/gru-nitro/live/clients/dash/enc/x0srg3jjpz/out/v1/f779c49314394d61886d63f58d9d52e4/cenc.mpd?dvr_window_length=30";
+
+const LICENSE_URI = "https://mrghnngupolsgatcmevw.supabase.co/functions/v1/DSPORT1";
+
+async function initPlayer() {
+    const video = document.getElementById('video');
+    const ui = video.ui;
+    const controls = ui.getControls();
+    const player = controls.getPlayer();
+    window.player = player;
+
+    // Configuración de UI
+    ui.configure({
+        seekBarColors: {
+            base: 'rgba(255,255,255,.2)',
+            buffered: 'rgba(255,255,255,.4)',
+            played: 'rgb(255,0,0)'
+        }
+    });
+
+    // Configuración DRM - ClearKey con License Server
+    player.configure({
+        drm: {
+            servers: {
+                'org.w3.clearkey': LICENSE_URI
+            },
+            clearKeys: {} // Se deja vacío porque usamos license server
+        }
+    });
+
+    player.addEventListener('error', onErrorEvent);
+
+    try {
+        await player.load(MPD_URL);
+        console.log('✅ DSPORTS ARGENTINA HD - MUNDIAL cargado correctamente');
+    } catch (error) {
+        console.error('Error al cargar el video:', error);
+    }
+}
+
+function onErrorEvent(event) {
+    console.error('Shaka Error:', event.detail);
+}
+
+document.addEventListener('shaka-ui-loaded', initPlayer);
+document.addEventListener('shaka-ui-load-failed', () => {
+    console.error('No se pudo cargar Shaka Player');
+});
+</script>
+</body>
+</html>
