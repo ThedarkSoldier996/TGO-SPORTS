@@ -21,8 +21,9 @@
 // === CONFIGURACIÓN ===
 const MPD_URL = "https://otte.live.fly.ww.aiv-cdn.net/gru-nitro/live/clients/dash/enc/x0srg3jjpz/out/v1/f779c49314394d61886d63f58d9d52e4/cenc.mpd?dvr_window_length=30";
 
-const KEY_ID = atob('T0w6mRLqdS6I9El4ZKG8iw==');
-const KEY    = atob('J4EoAE_oxv-yzSoMFUokGg==');
+// Claves decodificadas directamente (evita error atob)
+const KEY_ID = "T0w6mRLqdS6I9El4ZKG8iw";
+const KEY    = "J4EoAE_oxv-yzSoMFUokGg";
 
 async function initPlayer() {
     try {
@@ -41,20 +42,23 @@ async function initPlayer() {
             }
         });
 
-        player.addEventListener('error', (e) => console.error("Shaka Error:", e.detail));
+        player.addEventListener('error', (e) => {
+            console.error("🚨 Shaka Error:", e.detail);
+        });
 
-        console.log("Cargando stream...");
+        console.log("Cargando el stream en vivo...");
         await player.load(MPD_URL);
-        console.log("✅ Reproducción iniciada correctamente!");
+        
+        console.log("✅ ¡Reproducción iniciada correctamente!");
 
     } catch (error) {
-        console.error("❌ Error:", error);
+        console.error("❌ Error general:", error);
     }
 }
 
-// Iniciar
+// Iniciar reproductor
 document.addEventListener('shaka-ui-loaded', initPlayer);
-window.addEventListener('load', () => setTimeout(initPlayer, 800));
+window.addEventListener('load', () => setTimeout(initPlayer, 1000));
 </script>
 </body>
 </html>
